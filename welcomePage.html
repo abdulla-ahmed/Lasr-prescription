@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Medical Prescription App</title>
   <style>
-    /* General Styling */
     body {
       font-family: 'Times New Roman', Times, serif;
       margin: 20px;
@@ -27,7 +26,7 @@
       display: block;
       margin: 10px 0 5px;
     }
-    input, button, select {
+    input, button {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -43,7 +42,7 @@
     button:hover {
       background-color: #218838;
     }
-    #mainApp {
+    #mainApp, #welcomeMessage {
       display: none;
     }
   </style>
@@ -52,66 +51,64 @@
   <!-- Welcome Page -->
   <div id="welcomePage" class="container">
     <h1>Welcome to the Medical Prescription App</h1>
-    <div>
-      <form id="loginForm">
-        <h2>Login</h2>
-        <label for="loginUsername">Username</label>
-        <input type="text" id="loginUsername" placeholder="Enter your username" required>
-        <label for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" placeholder="Enter your password" required>
-        <button type="button" onclick="loginUser()">Login</button>
-      </form>
-      <form id="registerForm">
-        <h2>Register</h2>
-        <label for="registerName">Name</label>
-        <input type="text" id="registerName" placeholder="Enter your name" required>
-        <label for="registerUsername">Username</label>
-        <input type="text" id="registerUsername" placeholder="Choose a username" required>
-        <label for="registerPassword">Password</label>
-        <input type="password" id="registerPassword" placeholder="Choose a password" required>
-        <button type="button" onclick="registerUser()">Register</button>
-      </form>
-    </div>
+    <p>Please log in or register to access the app.</p>
+    <form id="loginForm">
+      <h2>Login</h2>
+      <label for="loginUsername">Username</label>
+      <input type="text" id="loginUsername" placeholder="Enter your username" required>
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter your password" required>
+      <button type="button" onclick="loginUser()">Login</button>
+    </form>
+    <form id="registerForm">
+      <h2>Register</h2>
+      <label for="registerName">Name</label>
+      <input type="text" id="registerName" placeholder="Enter your name" required>
+      <label for="registerUsername">Username</label>
+      <input type="text" id="registerUsername" placeholder="Choose a username" required>
+      <label for="registerPassword">Password</label>
+      <input type="password" id="registerPassword" placeholder="Choose a password" required>
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+      <button type="button" onclick="registerUser()">Register</button>
+    </form>
+  </div>
+
+  <!-- Welcome Message Page -->
+  <div id="welcomeMessage" class="container">
+    <h1>Glad to See You Again!</h1>
+    <p>Welcome back, <span id="userName"></span>!</p>
+    <button type="button" onclick="proceedToMain()">Proceed to Main Program</button>
   </div>
 
   <!-- Main App -->
   <div id="mainApp" class="container">
     <h1>Medical Prescription App</h1>
     <button onclick="logoutUser()">Logout</button>
-    <p>Welcome back, <span id="userName"></span>!</p>
-    <!-- Original Content Starts Here -->
     <div>
       <h2>Doctor's Information</h2>
-      <form id="doctorInfoForm">
-        <label for="doctorName">Doctor's Name</label>
-        <input type="text" id="doctorName" placeholder="Enter doctor's name" required>
-        <!-- Add other fields as per your original content -->
-        <button type="button" onclick="saveDoctorInfo()">Save Info</button>
-      </form>
+      <!-- Add Doctor's Info Form -->
     </div>
     <div>
       <h2>Patient Prescription</h2>
-      <!-- Add your patient prescription fields here -->
+      <!-- Add Patient Prescription Form -->
     </div>
-    <!-- Original Content Ends Here -->
   </div>
 
   <script>
-    // Check if user is logged in
-    document.addEventListener('DOMContentLoaded', () => {
-      const loggedInUser = localStorage.getItem('loggedInUser');
-      if (loggedInUser) {
-        loadMainApp(JSON.parse(loggedInUser));
-      }
-    });
-
     function registerUser() {
       const name = document.getElementById('registerName').value;
       const username = document.getElementById('registerUsername').value;
       const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
 
-      if (!name || !username || !password) {
+      if (!name || !username || !password || !confirmPassword) {
         alert('All fields are required!');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match!');
         return;
       }
 
@@ -140,24 +137,23 @@
       }
 
       localStorage.setItem('loggedInUser', JSON.stringify(user));
-      loadMainApp(user);
+      loadWelcomeMessage(user);
     }
 
-    function loadMainApp(user) {
+    function loadWelcomeMessage(user) {
       document.getElementById('welcomePage').style.display = 'none';
-      document.getElementById('mainApp').style.display = 'block';
+      document.getElementById('welcomeMessage').style.display = 'block';
       document.getElementById('userName').textContent = user.name;
+    }
+
+    function proceedToMain() {
+      document.getElementById('welcomeMessage').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
     }
 
     function logoutUser() {
       localStorage.removeItem('loggedInUser');
       location.reload();
-    }
-
-    function saveDoctorInfo() {
-      const doctorName = document.getElementById('doctorName').value;
-      // Save other doctor details...
-      alert('Doctor info saved!');
     }
   </script>
 </body>
