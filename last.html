@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Prescription App</title>
+  <style>
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: 'Times New Roman', Times, serif;
+    }
+    .drug-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .drug-group input, .drug-group select {
+      flex: 1;
+      min-width: 100px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      font-family: 'Times New Roman', Times, serif;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .add-drug-btn {
+      background-color: #007bff;
+    }
+    .add-drug-btn:hover {
+      background-color: #0056b3;
+    }
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+    }
+    .tab-button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .tab-button.active {
+      background-color: #0056b3;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Medical Prescription App</h1>
+
+    <!-- Tabs for navigation -->
+    <div class="tabs">
+      <button class="tab-button active" onclick="showTab(1)">Doctor's Info</button>
+      <button class="tab-button" onclick="showTab(2)">Patient Prescription</button>
+    </div>
+
+    <!-- Page 1: Doctor's Information -->
+    <div id="doctorInfoTab" class="tab-content active">
+      <h2>Enter Doctor's Information</h2>
+      <form id="doctorInfoForm">
+        <label for="doctorName">Doctor's Name</label>
+        <input type="text" id="doctorName" placeholder="Enter doctor's name" required>
+
+        <label for="doctorSpecialty">Specialty</label>
+        <input type="text" id="doctorSpecialty" placeholder="Enter specialty" required>
+
+        <label for="doctorWork">Work</label>
+        <input type="text" id="doctorWork" placeholder="Enter work (e.g., Oncology)" required>
+
+        <label for="doctorRegNo">Registration Number</label>
+        <input type="text" id="doctorRegNo" placeholder="Enter registration number" required>
+
+        <label for="doctorAddress">Clinic Address</label>
+        <input type="text" id="doctorAddress" placeholder="Enter clinic address" required>
+
+        <label for="doctorMobile">Mobile Number</label>
+        <input type="text" id="doctorMobile" placeholder="Enter mobile number" required>
+
+        <label for="doctorEmail">Email</label>
+        <input type="email" id="doctorEmail" placeholder="Enter email" required>
+
+        <button type="button" onclick="saveDoctorInfo()">Save Doctor Info</button>
+      </form>
+    </div>
+
+    <!-- Page 2: Patient Prescription -->
+    <div id="patientPrescriptionTab" class="tab-content">
+      <h2>Enter Patient Prescription</h2>
+      <form id="prescriptionForm">
+        <label for="patientName">Patient Name</label>
+        <input type="text" id="patientName" placeholder="Enter patient name" required>
+
+        <label for="patientAge">Age</label>
+        <input type="number" id="patientAge" placeholder="Enter patient age" required>
+
+        <label for="patientSex">Sex</label>
+        <select id="patientSex" required>
+          <option value="" disabled selected>Select</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+
+        <label>Drugs</label>
+        <div id="drugsContainer">
+          <div class="drug-group">
+            <input type="text" placeholder="Drug Name" class="drug-name" required>
+            <input type="text" placeholder="Dose" class="drug-dose" required>
+            <input type="text" placeholder="Amount Provided" class="drug-amount" required>
+            <input type="text" placeholder="Duration (e.g., 7 days)" class="drug-duration" required>
+            <input type="text" placeholder="Frequency" class="drug-frequency" required>
+          </div>
+        </div>
+
+        <button type="button" class="add-drug-btn" onclick="addDrug()">+ Add Drug</button>
+
+        <label for="doctorSignature">Doctor's Signature</label>
+        <input type="text" id="doctorSignature" placeholder="Enter doctor's signature" required>
+
+        <button type="button" onclick="generatePDF()">Generate Prescription (PDF)</button>
+        <button type="button" onclick="resetForm()">Reset for New Patient</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script>
+    let doctorInfo = JSON.parse(localStorage.getItem('doctorInfo')) || {};
+
+    // Show the appropriate tab
+    function showTab(tabNumber) {
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach((tab, index) => {
+        if (index === tabNumber - 1) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+      const buttons = document.querySelectorAll('.tab-button');
+      buttons.forEach((button, index) => {
+        if (index === tabNumber - 1) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      });
+    }
+
+    // Save doctor info to localStorage
+    function saveDoctorInfo() {
+      const doctorName = document.getElementById('doctorName').value;
+      const doctorSpecialty = document.getElementById('doctorSpecialty').value;
+      const doctorWork = document.getElementById('doctorWork').value;
+      const doctorRegNo = document.getElementById('doctorRegNo').value;
+      const doctorAddress = document.getElementById('doctorAddress').value;
+      const doctorMobile = document.getElementById('doctorMobile').value;
+      const doctorEmail = document.getElementById('doctorEmail').value;
+
+      if (doctorName && doctorSpecialty && doctorWork && doctorRegNo && doctorAddress && doctorMobile && doctorEmail) {
+        doctorInfo = { doctorName, doctorSpecialty, doctorWork, doctorRegNo, doctorAddress, doctorMobile, doctorEmail };
+        localStorage.setItem('doctorInfo', JSON.stringify(doctorInfo));
+        alert('Doctor info saved successfully!');
+      } else {
+        alert('Please fill in all fields.');
+      }
+    }
+
+    // Function for adding drugs
+    function addDrug() {
+      const drugsContainer = document.getElementById('drugsContainer');
+      const drugGroup = document.createElement('div');
+      drugGroup.classList.add('drug-group');
+      drugGroup.innerHTML = `
+        <input type="text" placeholder="Drug Name" class="drug-name" required>
+        <input type="text" placeholder="Dose" class="drug-dose" required>
+        <input type="text" placeholder="Amount Provided" class="drug-amount" required>
+        <input type="text" placeholder="Duration (e.g., 7 days)" class="drug-duration" required>
+        <input type="text" placeholder="Frequency" class="drug-frequency" required>
+      `;
+      drugsContainer.appendChild(drugGroup);
+    }
+
+    // Generate the PDF
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+
+      const doctorName = doctorInfo.doctorName;
+      const doctorSpecialty = doctorInfo.doctorSpecialty;
+      const doctorWork = doctorInfo.doctorWork;
+      const doctorRegNo = doctorInfo.doctorRegNo;
+      const doctorAddress = doctorInfo.doctorAddress;
+      const doctorMobile = doctorInfo.doctorMobile;
+      const doctorEmail = doctorInfo.doctorEmail;
+
+      const patientName = document.getElementById('patientName').value;
+      const patientAge = document.getElementById('patientAge').value;
+      const patientSex = document.getElementById('patientSex').value;
+      const doctorSignature = document.getElementById('doctorSignature').value;
+
+      if (!doctorName || !patientName || !patientAge || !patientSex || !doctorSignature) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      const doc = new jsPDF();
+      doc.setFont('times', 'normal'); // Use Times New Roman
+
+      // Header: Doctor's info in dark blue
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 139);  // Dark blue
+      doc.text(doctorName, 105, 30, null, null, "center");
+
+      // Specialty and Work under the doctor's name
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0); // Black
+      doc.text(doctorSpecialty, 105, 40, null, null, "center");
+      doc.text(doctorWork, 105, 50, null, null, "center");
+
+      // Registration Number below the name
+      doc.text(`Reg No: ${doctorRegNo}`, 105, 60, null, null, "center");
+
+      // Draw first line under doctor information
+      doc.setLineWidth(0.5);
+      doc.line(10, 65, 200, 65);
+
+      // Patient Info in black between lines
+      let y = 70;
+      doc.setTextColor(0, 0, 0); // Black
+      doc.text(`Patient Name: ${patientName}`, 10, y);
+      doc.text(`Age: ${patientAge}`, 100, y);
+      doc.text(`Sex: ${patientSex}`, 170, y);
+
+      // Draw second line
+      y += 10;
+      doc.setLineWidth(0.5);
+      doc.line(10, y, 200, y);
+
+      // Prescription header in red
+      y += 10;
+      doc.setTextColor(255, 0, 0);  // Red
+      doc.text("Prescription:", 10, y);
+      y += 10;
+
+      // List of drugs in black
+      const drugs = document.querySelectorAll('.drug-group');
+      drugs.forEach(drug => {
+        const name = drug.querySelector('.drug-name').value;
+        const dose = drug.querySelector('.drug-dose').value;
+        const amount = drug.querySelector('.drug-amount').value;
+        const duration = drug.querySelector('.drug-duration').value;
+        const frequency = drug.querySelector('.drug-frequency').value;
+
+        if (name && dose && amount && duration && frequency) {
+          doc.setTextColor(0, 0, 0); // Black
+          doc.text(`- ${name}, Dose: ${dose}, Amount: ${amount}, Duration: ${duration}, Frequency: ${frequency}`, 10, y);
+          y += 10;
+        }
+      });
+
+      // Doctor's signature
+      doc.text(`Doctor's Signature: ${doctorSignature}`, 150, y);
+
+      // Draw third line
+      y += 20;
+      doc.setLineWidth(0.5);
+      doc.line(10, y, 200, y);
+
+      // Footer: Address, Mobile, Email in green
+      doc.setTextColor(0, 128, 0);  // Green
+      doc.text(`Address: ${doctorAddress}`, 10, y + 10);
+      doc.text(`Mobile: ${doctorMobile}`, 110, y + 10);
+      doc.text(`Email: ${doctorEmail}`, 10, y + 20);
+
+      // Save PDF
+      doc.save(`Prescription_${patientName}_${new Date().toISOString().slice(0, 10)}.pdf`);
+    }
+
+    // Reset the form
+    function resetForm() {
+      document.getElementById('prescriptionForm').reset();
+      document.getElementById('drugsContainer').innerHTML = '';
+    }
+  </script>
+
+</body>
+</html>
