@@ -52,8 +52,9 @@
 <body>
   <div class="container">
     <h1>Welcome to the Medical Prescription App</h1>
-    <p>Please log in to access the app.</p>
+    <p>Please log in or <a href="javascript:void(0);" onclick="toggleForm('registerForm')">Register</a> to access the app.</p>
 
+    <!-- Login Form -->
     <div id="loginForm">
       <h2>Login</h2>
       <label for="loginUsername">Username</label>
@@ -63,9 +64,60 @@
       <button type="button" onclick="loginUser()">Login</button>
       <p class="error" id="loginError"></p>
     </div>
+
+    <!-- Register Form (Hidden by default) -->
+    <div id="registerForm" style="display: none;">
+      <h2>Register</h2>
+      <label for="registerName">Name</label>
+      <input type="text" id="registerName" placeholder="Enter your name" required>
+      <label for="registerUsername">Username</label>
+      <input type="text" id="registerUsername" placeholder="Choose a username" required>
+      <label for="registerPassword">Password</label>
+      <input type="password" id="registerPassword" placeholder="Choose a password" required>
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+      <button type="button" onclick="registerUser()">Register</button>
+      <p class="error" id="registerError"></p>
+      <p>Already have an account? <a href="javascript:void(0);" onclick="toggleForm('loginForm')">Login here</a></p>
+    </div>
   </div>
 
   <script>
+    function toggleForm(formId) {
+      const forms = document.querySelectorAll('.container div');
+      forms.forEach(form => form.style.display = 'none');
+      document.getElementById(formId).style.display = 'block';
+      clearErrors();
+    }
+
+    function registerUser() {
+      const name = document.getElementById('registerName').value;
+      const username = document.getElementById('registerUsername').value;
+      const password = document.getElementById('registerPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (!name || !username || !password || !confirmPassword) {
+        showError('registerError', 'All fields are required!');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showError('registerError', 'Passwords do not match!');
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      if (users.some(user => user.username === username)) {
+        showError('registerError', 'Username already exists!');
+        return;
+      }
+
+      users.push({ name, username, password });
+      localStorage.setItem('users', JSON.stringify(users));
+      alert('Registration successful!');
+      toggleForm('loginForm');
+    }
+
     function loginUser() {
       const username = document.getElementById('loginUsername').value;
       const password = document.getElementById('loginPassword').value;
@@ -78,16 +130,18 @@
         return;
       }
 
-      // Store the user's name in localStorage for the next page
+      // Store user info in localStorage to display on the welcome page
       localStorage.setItem('loggedInUser', JSON.stringify(user));
-      
-      // Redirect to the new page after login
-      window.location.href = "welcome.html"; 
+      window.location.href = "welcome.html"; // Redirect to welcome page
     }
 
     function showError(errorElementId, errorMessage) {
       const errorElement = document.getElementById(errorElementId);
       errorElement.textContent = errorMessage;
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.error').forEach(error => error.textContent = '');
     }
   </script>
 </body>
