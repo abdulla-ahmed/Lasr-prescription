@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Prescription App</title>
+  <style>
+    /* General Styling */
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input, button, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    #mainApp {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Welcome Page -->
+  <div id="welcomePage" class="container">
+    <h1>Welcome to the Medical Prescription App</h1>
+    <div>
+      <form id="loginForm">
+        <h2>Login</h2>
+        <label for="loginUsername">Username</label>
+        <input type="text" id="loginUsername" placeholder="Enter your username" required>
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+        <button type="button" onclick="loginUser()">Login</button>
+      </form>
+      <form id="registerForm">
+        <h2>Register</h2>
+        <label for="registerName">Name</label>
+        <input type="text" id="registerName" placeholder="Enter your name" required>
+        <label for="registerUsername">Username</label>
+        <input type="text" id="registerUsername" placeholder="Choose a username" required>
+        <label for="registerPassword">Password</label>
+        <input type="password" id="registerPassword" placeholder="Choose a password" required>
+        <button type="button" onclick="registerUser()">Register</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="mainApp" class="container">
+    <h1>Medical Prescription App</h1>
+    <button onclick="logoutUser()">Logout</button>
+    <p>Welcome back, <span id="userName"></span>!</p>
+    <!-- Original Content Starts Here -->
+    <div>
+      <h2>Doctor's Information</h2>
+      <form id="doctorInfoForm">
+        <label for="doctorName">Doctor's Name</label>
+        <input type="text" id="doctorName" placeholder="Enter doctor's name" required>
+        <!-- Add other fields as per your original content -->
+        <button type="button" onclick="saveDoctorInfo()">Save Info</button>
+      </form>
+    </div>
+    <div>
+      <h2>Patient Prescription</h2>
+      <!-- Add your patient prescription fields here -->
+    </div>
+    <!-- Original Content Ends Here -->
+  </div>
+
+  <script>
+    // Check if user is logged in
+    document.addEventListener('DOMContentLoaded', () => {
+      const loggedInUser = localStorage.getItem('loggedInUser');
+      if (loggedInUser) {
+        loadMainApp(JSON.parse(loggedInUser));
+      }
+    });
+
+    function registerUser() {
+      const name = document.getElementById('registerName').value;
+      const username = document.getElementById('registerUsername').value;
+      const password = document.getElementById('registerPassword').value;
+
+      if (!name || !username || !password) {
+        alert('All fields are required!');
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      if (users.some(user => user.username === username)) {
+        alert('Username already exists!');
+        return;
+      }
+
+      users.push({ name, username, password });
+      localStorage.setItem('users', JSON.stringify(users));
+      alert('Registration successful!');
+      document.getElementById('registerForm').reset();
+    }
+
+    function loginUser() {
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const user = users.find(user => user.username === username && user.password === password);
+
+      if (!user) {
+        alert('Invalid username or password!');
+        return;
+      }
+
+      localStorage.setItem('loggedInUser', JSON.stringify(user));
+      loadMainApp(user);
+    }
+
+    function loadMainApp(user) {
+      document.getElementById('welcomePage').style.display = 'none';
+      document.getElementById('mainApp').style.display = 'block';
+      document.getElementById('userName').textContent = user.name;
+    }
+
+    function logoutUser() {
+      localStorage.removeItem('loggedInUser');
+      location.reload();
+    }
+
+    function saveDoctorInfo() {
+      const doctorName = document.getElementById('doctorName').value;
+      // Save other doctor details...
+      alert('Doctor info saved!');
+    }
+  </script>
+</body>
+</html>
