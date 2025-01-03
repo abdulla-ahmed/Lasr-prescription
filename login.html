@@ -47,6 +47,11 @@
       font-size: 0.9em;
       margin-top: -10px;
     }
+    .link {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -78,7 +83,7 @@
       <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
       <button type="button" onclick="registerUser()">Register</button>
       <p class="error" id="registerError"></p>
-      <p>Already have an account? <a href="javascript:void(0);" onclick="toggleForm('loginForm')">Login here</a></p>
+      <p class="link">Already have an account? <a href="javascript:void(0);" onclick="toggleForm('loginForm')">Login here</a></p>
     </div>
   </div>
 
