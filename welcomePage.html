@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Medical Prescription App</title>
+  <title>Welcome to Medical Prescription App</title>
   <style>
     body {
       font-family: 'Times New Roman', Times, serif;
@@ -42,16 +42,17 @@
     button:hover {
       background-color: #218838;
     }
-    #mainApp, #welcomeMessage {
+    #proceedButton {
       display: none;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <!-- Welcome Page -->
-  <div id="welcomePage" class="container">
+  <div class="container">
     <h1>Welcome to the Medical Prescription App</h1>
     <p>Please log in or register to access the app.</p>
+
     <form id="loginForm">
       <h2>Login</h2>
       <label for="loginUsername">Username</label>
@@ -60,6 +61,7 @@
       <input type="password" id="loginPassword" placeholder="Enter your password" required>
       <button type="button" onclick="loginUser()">Login</button>
     </form>
+
     <form id="registerForm">
       <h2>Register</h2>
       <label for="registerName">Name</label>
@@ -72,27 +74,8 @@
       <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
       <button type="button" onclick="registerUser()">Register</button>
     </form>
-  </div>
 
-  <!-- Welcome Message Page -->
-  <div id="welcomeMessage" class="container">
-    <h1>Glad to See You Again!</h1>
-    <p>Welcome back, <span id="userName"></span>!</p>
-    <button type="button" onclick="proceedToMain()">Proceed to Main Program</button>
-  </div>
-
-  <!-- Main App -->
-  <div id="mainApp" class="container">
-    <h1>Medical Prescription App</h1>
-    <button onclick="logoutUser()">Logout</button>
-    <div>
-      <h2>Doctor's Information</h2>
-      <!-- Add Doctor's Info Form -->
-    </div>
-    <div>
-      <h2>Patient Prescription</h2>
-      <!-- Add Patient Prescription Form -->
-    </div>
+    <button id="proceedButton" onclick="proceedToMain()">Proceed to Main Program</button>
   </div>
 
   <script>
@@ -122,6 +105,7 @@
       localStorage.setItem('users', JSON.stringify(users));
       alert('Registration successful!');
       document.getElementById('registerForm').reset();
+      showProceedButton();
     }
 
     function loginUser() {
@@ -136,24 +120,16 @@
         return;
       }
 
-      localStorage.setItem('loggedInUser', JSON.stringify(user));
-      loadWelcomeMessage(user);
+      alert(`Welcome back, ${user.name}!`);
+      showProceedButton();
     }
 
-    function loadWelcomeMessage(user) {
-      document.getElementById('welcomePage').style.display = 'none';
-      document.getElementById('welcomeMessage').style.display = 'block';
-      document.getElementById('userName').textContent = user.name;
+    function showProceedButton() {
+      document.getElementById('proceedButton').style.display = 'block';
     }
 
     function proceedToMain() {
-      document.getElementById('welcomeMessage').style.display = 'none';
-      document.getElementById('mainApp').style.display = 'block';
-    }
-
-    function logoutUser() {
-      localStorage.removeItem('loggedInUser');
-      location.reload();
+      window.location.href = "mainprogram.html";
     }
   </script>
 </body>
