@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Medical Prescription App</title>
+  <style>
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .error {
+      color: red;
+      font-size: 0.9em;
+      margin-top: -10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to the Medical Prescription App</h1>
+    <p>Please log in to access the app.</p>
+
+    <div id="loginForm">
+      <h2>Login</h2>
+      <label for="loginUsername">Username</label>
+      <input type="text" id="loginUsername" placeholder="Enter your username" required>
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter your password" required>
+      <button type="button" onclick="loginUser()">Login</button>
+      <p class="error" id="loginError"></p>
+    </div>
+  </div>
+
+  <script>
+    function loginUser() {
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const user = users.find(user => user.username === username && user.password === password);
+
+      if (!user) {
+        showError('loginError', 'Invalid username or password!');
+        return;
+      }
+
+      // Store the user's name in localStorage for the next page
+      localStorage.setItem('loggedInUser', JSON.stringify(user));
+      
+      // Redirect to the new page after login
+      window.location.href = "welcome.html"; 
+    }
+
+    function showError(errorElementId, errorMessage) {
+      const errorElement = document.getElementById(errorElementId);
+      errorElement.textContent = errorMessage;
+    }
+  </script>
+</body>
+</html>
