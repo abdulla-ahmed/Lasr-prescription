@@ -253,7 +253,7 @@
       <h2 style="color: darkblue;line-height:0.5;font-size:45px;">${doctorName}</h2>
       <p style="color: darkblue;line-height:0.5;font-size:20px;">${doctorSpecialty}</p>
       <p style="color: darkblue;line-height:0.5;font-size:15px;">${doctorWork}</p>
-      <p style="color: darkblue;line-height:0.5;font-size:15px;">Reg No: ${doctorRegNo}</p>
+      <p style="color: darkblue;line-height:0.5;font-size:15px;">رقم التسجيل ${doctorRegNo}</p>
       <hr>
       <div style="text-align: left;">
         <p style="display: inline-block; width: 40%; padding-right: 10px;">Patient Name: ${patientName}</p>
@@ -271,7 +271,7 @@
           const duration = drug.querySelector('.drug-duration').value;
           const frequency = drug.querySelector('.drug-frequency').value;
           return `<li style="margin-bottom: 5px; list-style-position: inside;text-align:left">
-              <span>drug: ${name},dose: ${dose}, amount: ${amount},duration: ${duration}</span>
+              <span><strong>drug: </strong>${name},<strong>dose:</strong> ${dose},<strong>duration:</strong> ${duration},<strong>amount:</strong> ${amount}</span>
               <br>
               <span><strong>Frequency:</strong> ${frequency}</span>
             </li>`;
