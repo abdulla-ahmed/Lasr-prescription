@@ -170,7 +170,7 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
   <script>
     let doctorInfo = JSON.parse(localStorage.getItem('doctorInfo')) || {};
 
@@ -229,99 +229,84 @@
     }
 
     // Generate the PDF
-    async function generatePDF() {
-      const { jsPDF } = window.jspdf;
+    function generatePDF() {
+  const doctorName = doctorInfo.doctorName;
+  const doctorSpecialty = doctorInfo.doctorSpecialty;
+  const doctorWork = doctorInfo.doctorWork;
+  const doctorRegNo = doctorInfo.doctorRegNo;
+  const doctorAddress = doctorInfo.doctorAddress;
+  const doctorMobile = doctorInfo.doctorMobile;
+  const doctorEmail = doctorInfo.doctorEmail;
 
-      const doctorName = doctorInfo.doctorName;
-      const doctorSpecialty = doctorInfo.doctorSpecialty;
-      const doctorWork = doctorInfo.doctorWork;
-      const doctorRegNo = doctorInfo.doctorRegNo;
-      const doctorAddress = doctorInfo.doctorAddress;
-      const doctorMobile = doctorInfo.doctorMobile;
-      const doctorEmail = doctorInfo.doctorEmail;
+  const patientName = document.getElementById('patientName').value;
+  const patientAge = document.getElementById('patientAge').value;
+  const patientSex = document.getElementById('patientSex').value;
+  const doctorSignature = document.getElementById('doctorSignature').value;
 
-      const patientName = document.getElementById('patientName').value;
-      const patientAge = document.getElementById('patientAge').value;
-      const patientSex = document.getElementById('patientSex').value;
-      const doctorSignature = document.getElementById('doctorSignature').value;
+  if (!doctorName || !patientName || !patientAge || !patientSex || !doctorSignature) {
+    alert('Please fill in all fields.');
+    return;
+  }
 
-      if (!doctorName || !patientName || !patientAge || !patientSex || !doctorSignature) {
-        alert('Please fill in all fields.');
-        return;
-      }
+  const content = `
+    <div style="font-family: 'Times New Roman', Times, serif; width: 100%; text-align: center;">
+      <h2 style="color: darkblue;line-height:0.5;font-size:45px;">${doctorName}</h2>
+      <p style="color: darkblue;line-height:0.5;font-size:20px;">${doctorSpecialty}</p>
+      <p style="color: darkblue;line-height:0.5;font-size:15px;">${doctorWork}</p>
+      <p style="color: darkblue;line-height:0.5;font-size:15px;">Reg No: ${doctorRegNo}</p>
+      <hr>
+      <div style="text-align: left;">
+        <p style="display: inline-block; width: 40%; padding-right: 10px;">Patient Name: ${patientName}</p>
+        <p style="display: inline-block; width: 27%; padding-right: 10px;">Age: ${patientAge}</p>
+        <p style="display: inline-block; width: 27%;">Sex: ${patientSex}</p>
+      </div>
+      <hr>
 
-      const doc = new jsPDF();
-      doc.setFont('times', 'normal'); // Use Times New Roman
+      <p style="text-align:left; color: red;">Prescription:</p>
+     <ol style="color: black; padding-left: 20px; margin: 5px; line-height: 1.2;">
+        ${Array.from(document.querySelectorAll('.drug-group')).map(drug => {
+          const name = drug.querySelector('.drug-name').value;
+          const dose = drug.querySelector('.drug-dose').value;
+          const amount = drug.querySelector('.drug-amount').value;
+          const duration = drug.querySelector('.drug-duration').value;
+          const frequency = drug.querySelector('.drug-frequency').value;
+          return `<li style="margin-bottom: 5px; list-style-position: inside;text-align:left">
+              <span>drug: ${name},dose: ${dose}, amount: ${amount},duration: ${duration}</span>
+              <br>
+              <span><strong>Frequency:</strong> ${frequency}</span>
+            </li>`;
+        }).join('')}
+      </ol>
 
-      // Header: Doctor's info in dark blue
-      doc.setFontSize(16);
-      doc.setTextColor(0, 0, 139);  // Dark blue
-      doc.text(doctorName, 105, 30, null, null, "center");
+      <p style="text-align: right; color: black;">Doctor's Signature: ${doctorSignature}</p>
+      <hr>
+      <div style="text-align:left;">
+        <p style="text-align:left; width: 100%;line-height:0;color: green;">Address: ${doctorAddress}</p>
+        <p style="display: inline-block;text-align:left;width:60;line-height:0; color: green;">Email: ${doctorEmail}</p>
+        <p style="display:inline-block;text-align:left;width:25;line-height:0; color: green;margin-left: 170px;">Mobile: ${doctorMobile}</p>
+      </div>
+    </div>
+  `;
 
-      // Specialty and Work under the doctor's name
-      doc.setFontSize(12);
-      doc.setTextColor(0, 0, 0); // Black
-      doc.text(doctorSpecialty, 105, 40, null, null, "center");
-      doc.text(doctorWork, 105, 50, null, null, "center");
+  const element = document.createElement('div');
+  element.innerHTML = content;
 
-      // Registration Number below the name
-      doc.text(`Reg No: ${doctorRegNo}`, 105, 60, null, null, "center");
+  // Options for html2pdf
+  const options = {
+    margin: [20, 20, 20, 20], // Top, Left, Bottom, Right
+    filename: `Prescription_${patientName}_${new Date().toISOString().slice(0, 10)}.pdf`,
+    html2canvas: { scale: 4 }, // Higher scale for better quality
+    jsPDF: { unit: 'mm', format: 'a4' } // A4 size with mm unit
+  };
 
-      // Draw first line under doctor information
-      doc.setLineWidth(0.5);
-      doc.line(10, 65, 200, 65);
+  html2pdf()
+    .set(options)
+    .from(element)
+    .save(`Prescription_${patientName}_${new Date().toISOString().slice(0, 10)}.pdf`);
+}
 
-      // Patient Info in black between lines
-      let y = 70;
-      doc.setTextColor(0, 0, 0); // Black
-      doc.text(`Patient Name: ${patientName}`, 10, y);
-      doc.text(`Age: ${patientAge}`, 100, y);
-      doc.text(`Sex: ${patientSex}`, 170, y);
 
-      // Draw second line
-      y += 10;
-      doc.setLineWidth(0.5);
-      doc.line(10, y, 200, y);
 
-      // Prescription header in red
-      y += 10;
-      doc.setTextColor(255, 0, 0);  // Red
-      doc.text("Prescription:", 10, y);
-      y += 10;
-
-      // List of drugs in black
-      const drugs = document.querySelectorAll('.drug-group');
-      drugs.forEach(drug => {
-        const name = drug.querySelector('.drug-name').value;
-        const dose = drug.querySelector('.drug-dose').value;
-        const amount = drug.querySelector('.drug-amount').value;
-        const duration = drug.querySelector('.drug-duration').value;
-        const frequency = drug.querySelector('.drug-frequency').value;
-
-        if (name && dose && amount && duration && frequency) {
-          doc.setTextColor(0, 0, 0); // Black
-          doc.text(`- ${name}, Dose: ${dose}, Amount: ${amount}, Duration: ${duration}, Frequency: ${frequency}`, 10, y);
-          y += 10;
-        }
-      });
-
-      // Doctor's signature
-      doc.text(`Doctor's Signature: ${doctorSignature}`, 150, y);
-
-      // Draw third line
-      y += 20;
-      doc.setLineWidth(0.5);
-      doc.line(10, y, 200, y);
-
-      // Footer: Address, Mobile, Email in green
-      doc.setTextColor(0, 128, 0);  // Green
-      doc.text(`Address: ${doctorAddress}`, 10, y + 10);
-      doc.text(`Mobile: ${doctorMobile}`, 110, y + 10);
-      doc.text(`Email: ${doctorEmail}`, 10, y + 20);
-
-      // Save PDF
-      doc.save(`Prescription_${patientName}_${new Date().toISOString().slice(0, 10)}.pdf`);
-    }
 
     // Reset the form
     function resetForm() {
