@@ -172,6 +172,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
   <script>
+  	const formattedDate = new Date().toLocaleDateString();  // Global definition for current date
     let doctorInfo = JSON.parse(localStorage.getItem('doctorInfo')) || {};
     let doctorSignatureSrc = '';
 
@@ -202,7 +203,7 @@
         alert('Please fill in all fields.');
         return;
       }
-
+const formattedDate = new Date().toLocaleDateString();  // Current date for PDF
       const reader = new FileReader();
       reader.onload = function () {
         doctorSignatureSrc = reader.result;
@@ -270,6 +271,7 @@
           </ol>
           <div style="position: relative; text-align: right; margin-top: 20px;">
   <p style="margin: 0; position: relative; z-index: 1;">Doctor's Signature</p>
+   <p id="dateDisplay" style="margin: 0; position: relative; z-index: 3; transform: translateX(-30px);"> ${formattedDate}</p>
   <img src="${doctorSignatureSrc}" alt="Doctor's Signature" style="position: absolute; top: -70px; right: 0; width: 150px; height: 100px; object-fit: contain; opacity: 0.8; z-index: 2;">
 </div>
           <hr>
